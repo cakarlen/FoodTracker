@@ -90,15 +90,14 @@
         entryManager = [[EntryManager alloc] initWithWeek:weekNum withDict:[tempDict objectForKey:weekNum]];
         [tempArr addObject:entryManager];
     }
-    NSArray *reversedArray = [[tempArr reverseObjectEnumerator] allObjects];
-    
-    _results = reversedArray;
     
     for (id entry in _results) {
         if (![_resultsTitles containsObject:[entry weekNumber]]) {
             [_resultsTitles addObject:[entry weekNumber]];
         }
     }
+    
+    _resultsTitles = [_resultsTitles sortedArrayUsingSelector:@selector(compare:)];
     
 #if DEBUG
     DLog(@"arrFoodInfo is: %@", [self arrFoodInfo]);
