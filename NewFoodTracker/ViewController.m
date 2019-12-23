@@ -91,6 +91,8 @@
         [tempArr addObject:entryManager];
     }
     
+    _results = tempArr;
+    
     for (id entry in _results) {
         if (![_resultsTitles containsObject:[entry weekNumber]]) {
             [_resultsTitles addObject:[entry weekNumber]];
