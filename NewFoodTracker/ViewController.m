@@ -99,7 +99,10 @@
         }
     }
     
-    _resultsTitles = [_resultsTitles sortedArrayUsingSelector:@selector(compare:)];
+    NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:@"self" ascending:NO];
+    NSArray *descriptors = [NSArray arrayWithObject:descriptor];
+    NSArray *reverseOrder= [_resultsTitles sortedArrayUsingDescriptors:descriptors];
+    _resultsTitles = reverseOrder;
     
 #if DEBUG
     DLog(@"arrFoodInfo is: %@", [self arrFoodInfo]);
