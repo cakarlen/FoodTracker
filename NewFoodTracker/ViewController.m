@@ -131,7 +131,7 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     NSNumber *weekNum = [_resultsTitles objectAtIndex:section];
-    NSInteger *index = [self getIndexAtWeek:weekNum];
+    NSInteger index = [self getIndexAtWeek:weekNum];
     
     NSNumber *total = [[_results objectAtIndex:index] total];
     
@@ -141,7 +141,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     NSNumber *weekNum = [_resultsTitles objectAtIndex:section];
-    NSInteger *index = [self getIndexAtWeek:weekNum];
+    NSInteger index = [self getIndexAtWeek:weekNum];
     
     NSArray *sectionResults = [[_results objectAtIndex:index] purchasesArr];
     return [sectionResults count];
@@ -161,7 +161,7 @@
     }
     
     NSNumber *weekNum = [_resultsTitles objectAtIndex:indexPath.section];
-    NSInteger *index = [self getIndexAtWeek:weekNum];
+    NSInteger index = [self getIndexAtWeek:weekNum];
     
     EntryManager *sectionResults = [_results objectAtIndex:index];
     PurchaseManager *cellData = [[sectionResults purchasesArr] objectAtIndex:indexPath.row];
@@ -181,7 +181,7 @@
  
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         NSNumber *weekNum = [_resultsTitles objectAtIndex:indexPath.section];
-        NSInteger *index = [self getIndexAtWeek:weekNum];
+        NSInteger index = [self getIndexAtWeek:weekNum];
         
         EntryManager *sectionResults = [_results objectAtIndex:index];
         PurchaseManager *cellData = [[sectionResults purchasesArr] objectAtIndex:indexPath.row];
@@ -205,7 +205,7 @@
 -(void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
     // Get the record ID of the selected name and set it to the recordIDToEdit property.
     NSNumber *weekNum = [_resultsTitles objectAtIndex:indexPath.section];
-    NSInteger *index = [self getIndexAtWeek:weekNum];
+    NSInteger index = [self getIndexAtWeek:weekNum];
     
     EntryManager *sectionResults = [_results objectAtIndex:index];
     PurchaseManager *cellData = [[sectionResults purchasesArr] objectAtIndex:indexPath.row];
