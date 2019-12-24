@@ -33,6 +33,12 @@
             
             [self.purchasesArr addObject:purchase];
         }
+        
+        NSArray *sortedArray = [self.purchasesArr sortedArrayUsingComparator:^NSComparisonResult(PurchaseManager *p1, PurchaseManager *p2){
+            return [p2.date compare:p1.date];
+        }];
+        
+        self.purchasesArr = sortedArray;
     }
     
     return self;

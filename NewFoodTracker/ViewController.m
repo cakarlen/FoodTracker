@@ -79,7 +79,6 @@
         }
 
         [tempArray addObject:dict];
-    
         [tempDict setObject:tempArray forKey:key];
     }
     
@@ -98,11 +97,11 @@
             [_resultsTitles addObject:[entry weekNumber]];
         }
     }
-    
+
     NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:@"self" ascending:NO];
     NSArray *descriptors = [NSArray arrayWithObject:descriptor];
-    NSArray *reverseOrder= [_resultsTitles sortedArrayUsingDescriptors:descriptors];
-    _resultsTitles = reverseOrder;
+    NSArray *reverseTitles = [_resultsTitles sortedArrayUsingDescriptors:descriptors];
+    _resultsTitles = reverseTitles;
     
 #if DEBUG
     DLog(@"arrFoodInfo is: %@", [self arrFoodInfo]);
@@ -114,21 +113,27 @@
 
 #pragma mark - Table setup
 
+- (NSInteger)getIndexAtWeek:(NSNumber *)week {
+    NSInteger realIndex = -1;
+    
+    for (id temp in _results) {
+        if ([temp weekNumber] == week) {
+            return realIndex = [_results indexOfObject:temp];
+        }
+    }
+    
+    return realIndex;
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return [_resultsTitles count];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     NSNumber *weekNum = [_resultsTitles objectAtIndex:section];
-    int realIndex = -1;
+    NSInteger *index = [self getIndexAtWeek:weekNum];
     
-    for (id temp in _results) {
-        if ([temp weekNumber] == weekNum) {
-            realIndex = [_results indexOfObject:temp];
-        }
-    }
-    
-    NSNumber *total = [[_results objectAtIndex:realIndex] total];
+    NSNumber *total = [[_results objectAtIndex:index] total];
     
     NSString *placeHolder = [NSString stringWithFormat:@"Week %@ | Total: $%@", [[_resultsTitles objectAtIndex:section] stringValue], total];
     return placeHolder;
@@ -136,15 +141,9 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     NSNumber *weekNum = [_resultsTitles objectAtIndex:section];
-    int realIndex = -1;
+    NSInteger *index = [self getIndexAtWeek:weekNum];
     
-    for (id temp in _results) {
-        if ([temp weekNumber] == weekNum) {
-            realIndex = [_results indexOfObject:temp];
-        }
-    }
-    
-    NSArray *sectionResults = [[_results objectAtIndex:realIndex] purchasesArr];
+    NSArray *sectionResults = [[_results objectAtIndex:index] purchasesArr];
     return [sectionResults count];
 }
 
@@ -162,15 +161,9 @@
     }
     
     NSNumber *weekNum = [_resultsTitles objectAtIndex:indexPath.section];
-    int realIndex = -1;
+    NSInteger *index = [self getIndexAtWeek:weekNum];
     
-    for (id temp in _results) {
-        if ([temp weekNumber] == weekNum) {
-            realIndex = [_results indexOfObject:temp];
-        }
-    }
-    
-    EntryManager *sectionResults = [_results objectAtIndex:realIndex];
+    EntryManager *sectionResults = [_results objectAtIndex:index];
     PurchaseManager *cellData = [[sectionResults purchasesArr] objectAtIndex:indexPath.row];
     NSDictionary *actualData = nil;
     
@@ -188,15 +181,9 @@
  
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         NSNumber *weekNum = [_resultsTitles objectAtIndex:indexPath.section];
-        int realIndex = -1;
+        NSInteger *index = [self getIndexAtWeek:weekNum];
         
-        for (id temp in _results) {
-            if ([temp weekNumber] == weekNum) {
-                realIndex = [_results indexOfObject:temp];
-            }
-        }
-        
-        EntryManager *sectionResults = [_results objectAtIndex:realIndex];
+        EntryManager *sectionResults = [_results objectAtIndex:index];
         PurchaseManager *cellData = [[sectionResults purchasesArr] objectAtIndex:indexPath.row];
 
         // Delete the selected record.
@@ -218,15 +205,9 @@
 -(void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
     // Get the record ID of the selected name and set it to the recordIDToEdit property.
     NSNumber *weekNum = [_resultsTitles objectAtIndex:indexPath.section];
-    int realIndex = -1;
+    NSInteger *index = [self getIndexAtWeek:weekNum];
     
-    for (id temp in _results) {
-        if ([temp weekNumber] == weekNum) {
-            realIndex = [_results indexOfObject:temp];
-        }
-    }
-    
-    EntryManager *sectionResults = [_results objectAtIndex:realIndex];
+    EntryManager *sectionResults = [_results objectAtIndex:index];
     PurchaseManager *cellData = [[sectionResults purchasesArr] objectAtIndex:indexPath.row];
 
     self.recordIDToEdit = [[cellData idNum] intValue];
@@ -235,12 +216,8 @@
     [self performSegueWithIdentifier:@"idSegueEditInfo" sender:self];
 }
 
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath {
-    [_results exchangeObjectAtIndex:sourceIndexPath.row withObjectAtIndex:destinationIndexPath.row];
-}
-
 // Helper function
--(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
     EditInfoViewController *editInfoViewController = [segue destinationViewController];
     editInfoViewController.delegate = self;
     editInfoViewController.recordIDToEdit = self.recordIDToEdit;
