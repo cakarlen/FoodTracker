@@ -6,13 +6,14 @@
 //  Copyright © 2019 Chase Karlen. All rights reserved.
 //
 
-// TODO: Streamline some code and cleanup. Fix ordering of week numbers within table
+// TODO: Add Settings and init with database name within settings
 
 #import "ViewController.h"
 
-@interface ViewController ()
+@interface ViewController () <EditInfoViewControllerDelegate>
 
 @property (nonatomic, strong) DBManager *dbManager;
+@property (nonatomic, strong) SettingsViewController *settings;
 @property (nonatomic, strong) NSArray *arrFoodInfo;
 @property (nonatomic, strong) NSMutableArray *resultsTitles;
 @property (nonatomic, strong) NSMutableArray *results;
@@ -29,11 +30,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    self.settings = [[SettingsViewController alloc] init];
+    self.dbManager = [[DBManager alloc] init];
     
     self.foodTable.delegate = self;
     self.foodTable.dataSource = self;
-    
-    self.dbManager = [[DBManager alloc] initWithDatabaseFilename:@"food.db"];
+
+    self.dbManager = [[DBManager alloc] initWithDatabaseFilename:[self.settings currentDB]];
     
     [self loadData];
 }
@@ -52,7 +55,7 @@
     }
     
     self.resultsTitles = [[NSMutableArray alloc] init];
-    self.arrFoodInfo = [[NSArray alloc] initWithArray:[self.dbManager loadDataFromDB:query]];
+    self.arrFoodInfo = [[NSArray alloc] initWithArray:[self.dbManager loadDataFromDB:query forDatabase:@"food"]];
     NSMutableDictionary *tempDict = [[NSMutableDictionary alloc] init];
     
     NSCalendar *calendar = [NSCalendar currentCalendar];
@@ -194,7 +197,7 @@
         NSString *query = [NSString stringWithFormat:@"delete from food where id=%d", recordIDToDelete];
 
         // Execute the query.
-        [self.dbManager executeQuery:query];
+        [self.dbManager executeQuery:query forDatabase:@"food"];
 
         // Reload the table view.
         [self loadData];
@@ -217,10 +220,16 @@
 }
 
 // Helper function
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
-    EditInfoViewController *editInfoViewController = [segue destinationViewController];
-    editInfoViewController.delegate = self;
-    editInfoViewController.recordIDToEdit = self.recordIDToEdit;
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Because I didn't know another way to do this
+    if ([[segue identifier] isEqual:@"idSegueEditInfo"]) {
+        EditInfoViewController *editInfoViewController = [segue destinationViewController];
+        editInfoViewController.delegate = self;
+        editInfoViewController.recordIDToEdit = self.recordIDToEdit;
+    } else if ([[segue identifier] isEqual:@"goToSettings"]) {
+        SettingsViewController *settingsViewController = [segue destinationViewController];
+        settingsViewController.currentDB = [self.dbManager databaseFilename];
+    }
 }
 
 #pragma mark - Actions
@@ -235,6 +244,10 @@
     
     // Perform the segue.
     [self performSegueWithIdentifier:@"idSegueEditInfo" sender:self];
+}
+
+- (IBAction)clickedSettings:(id)sender {
+    [self performSegueWithIdentifier:@"goToSettings" sender:self];
 }
 
 @end

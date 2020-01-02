@@ -11,6 +11,7 @@
 @interface EditInfoViewController () <UITextViewDelegate>
 
 @property (nonatomic, strong) DBManager *dbManager;
+@property (nonatomic, strong) SettingsViewController *settings;
 @property (nonatomic, strong) EntryManager *entryManager;
 @property (nonatomic, strong) Helper *help;
 
@@ -25,7 +26,8 @@
     // Do any additional setup after loading the view.
     self.navigationController.navigationBar.tintColor = self.navigationItem.rightBarButtonItem.tintColor;
     
-    self.dbManager = [[DBManager alloc] initWithDatabaseFilename:@"food.db"];
+    self.settings = [[SettingsViewController alloc] init];
+    self.dbManager = [[DBManager alloc] initWithDatabaseFilename:[self.settings currentDB]];
     self.help = [[Helper alloc] init];
     
     _priceField.delegate = self;
@@ -58,7 +60,7 @@
     }
     
     // Execute the query.
-    [self.dbManager executeQuery:query];
+    [self.dbManager executeQuery:query forDatabase:@"food"];
     
     // If the query was successfully executed then pop the view controller.
     if (self.dbManager.affectedRows != 0) {
@@ -82,7 +84,7 @@
     NSString *query = [NSString stringWithFormat:@"select * from food where id=%d", self.recordIDToEdit];
     
     // Load the relevant data.
-    NSArray *results = [[NSArray alloc] initWithArray:[self.dbManager loadDataFromDB:query]];
+    NSArray *results = [[NSArray alloc] initWithArray:[self.dbManager loadDataFromDB:query forDatabase:@"food"]];
     
     NSString *dateString = [[results objectAtIndex:0] valueForKey:@"DATE"];
     NSDate *convertedDate = [_help convertStringToDate:dateString];

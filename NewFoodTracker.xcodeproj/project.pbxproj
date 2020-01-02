@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		AB0F83062384ECE7002FB525 /* PurchaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AB0F83052384ECE7002FB525 /* PurchaseManager.m */; };
+		AB21920023BA9096009FBF19 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB2191FF23BA9096009FBF19 /* SettingsViewController.m */; };
 		AB3319F1237A70E5008276C4 /* ionna.JPG in Resources */ = {isa = PBXBuildFile; fileRef = AB3319F0237A70E5008276C4 /* ionna.JPG */; };
 		AB52E73C2378FD3C00143A4D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AB52E73B2378FD3C00143A4D /* AppDelegate.m */; };
 		AB52E73F2378FD3C00143A4D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB52E73E2378FD3C00143A4D /* ViewController.m */; };
@@ -25,6 +26,8 @@
 /* Begin PBXFileReference section */
 		AB0F83042384ECE7002FB525 /* PurchaseManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PurchaseManager.h; sourceTree = "<group>"; };
 		AB0F83052384ECE7002FB525 /* PurchaseManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PurchaseManager.m; sourceTree = "<group>"; };
+		AB2191FE23BA9096009FBF19 /* SettingsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
+		AB2191FF23BA9096009FBF19 /* SettingsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		AB3319F0237A70E5008276C4 /* ionna.JPG */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = ionna.JPG; sourceTree = "<group>"; };
 		AB3319F2237B071E008276C4 /* Helper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Helper.h; sourceTree = "<group>"; };
 		AB52E7372378FD3C00143A4D /* Food Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Food Tracker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -86,6 +89,8 @@
 				AB52E7402378FD3C00143A4D /* Main.storyboard */,
 				AB52E7562379037B00143A4D /* EditInfoViewController.h */,
 				AB52E7572379037B00143A4D /* EditInfoViewController.m */,
+				AB2191FE23BA9096009FBF19 /* SettingsViewController.h */,
+				AB2191FF23BA9096009FBF19 /* SettingsViewController.m */,
 				AB52E7432378FD3E00143A4D /* Assets.xcassets */,
 				AB52E7452378FD3E00143A4D /* LaunchScreen.storyboard */,
 				AB52E7482378FD3E00143A4D /* Info.plist */,
@@ -185,6 +190,7 @@
 				AB94FFD0237F03EB00526728 /* EntryManager.m in Sources */,
 				AB52E7582379037B00143A4D /* EditInfoViewController.m in Sources */,
 				AB0F83062384ECE7002FB525 /* PurchaseManager.m in Sources */,
+				AB21920023BA9096009FBF19 /* SettingsViewController.m in Sources */,
 				AB52E73F2378FD3C00143A4D /* ViewController.m in Sources */,
 				AB52E74A2378FD3E00143A4D /* main.m in Sources */,
 				AB94FFD2237F040900526728 /* Helper.m in Sources */,

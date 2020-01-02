@@ -17,11 +17,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSMutableArray *arrColumnNames;
 @property (nonatomic) int affectedRows;
 @property (nonatomic) long long lastInsertedRowID;
+@property (nonatomic, strong) NSString *documentsDirectory;
+@property (nonatomic, strong) NSString *databaseFilename;
 
--(instancetype)initWithDatabaseFilename:(NSString *)dbFilename;
+- (instancetype)initWithDatabaseFilename:(NSString *)dbFilename;
 
--(NSArray *)loadDataFromDB:(NSString *)query;
--(void)executeQuery:(NSString *)query;
+- (NSArray *)loadDataFromDB:(NSString *)query forDatabase:(NSString *)database;
+- (void)executeQuery:(NSString *)query forDatabase:(NSString *)database;
+- (void)createNewDatabase:(NSString *)database;
 
 @end
 

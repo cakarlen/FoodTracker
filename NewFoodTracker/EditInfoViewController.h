@@ -10,6 +10,7 @@
 #import "DBManager.h"
 #import "Helper.h"
 #import "EntryManager.h"
+#import "SettingsViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

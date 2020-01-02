@@ -9,8 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "DBManager.h"
 #import "EditInfoViewController.h"
+#import "SettingsViewController.h"
 
-@interface ViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, EditInfoViewControllerDelegate>  
+@interface ViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>  
 
 @property (weak, nonatomic) IBOutlet UITableView *foodTable;
 - (IBAction)addNewRecord:(id)sender;
