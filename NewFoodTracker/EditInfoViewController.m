@@ -27,7 +27,7 @@
     self.navigationController.navigationBar.tintColor = self.navigationItem.rightBarButtonItem.tintColor;
     
     self.settings = [[SettingsViewController alloc] init];
-    self.dbManager = [[DBManager alloc] initWithDatabaseFilename:[self.settings currentDB]];
+    self.dbManager = [[DBManager alloc] initWithDatabaseFilename:[self.settings getCurrentDB]];
     self.help = [[Helper alloc] init];
     
     _priceField.delegate = self;
@@ -39,8 +39,12 @@
     }
 }
 
--(BOOL)textFieldShouldReturn:(UITextField *)textField {
-    [textField resignFirstResponder];
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
+    if([text isEqualToString:@"\n"]) {
+        [textView resignFirstResponder];
+        return NO;
+    }
+
     return YES;
 }
 

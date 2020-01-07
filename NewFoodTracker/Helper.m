@@ -62,5 +62,25 @@
     }
 }
 
+- (UIAlertController *)createAlertWithTitle:(NSString *)title withMessage:(NSString *)message withActions:(NSArray <UIAlertAction *> *)actions {
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:title
+                               message:message
+                               preferredStyle:UIAlertControllerStyleAlert];
+    for (UIAlertAction *singleAction in actions) {
+        [alert addAction:singleAction];
+    }
+    
+    return alert;
+}
+
+- (BOOL)doesfileExist:(NSString *)file {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:file]) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+
 @end
 

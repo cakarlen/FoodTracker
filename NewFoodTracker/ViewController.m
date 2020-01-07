@@ -6,8 +6,6 @@
 //  Copyright © 2019 Chase Karlen. All rights reserved.
 //
 
-// TODO: Add Settings and init with database name within settings
-
 #import "ViewController.h"
 
 @interface ViewController () <EditInfoViewControllerDelegate>
@@ -31,12 +29,11 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.settings = [[SettingsViewController alloc] init];
-    self.dbManager = [[DBManager alloc] init];
     
     self.foodTable.delegate = self;
     self.foodTable.dataSource = self;
 
-    self.dbManager = [[DBManager alloc] initWithDatabaseFilename:[self.settings currentDB]];
+    self.dbManager = [[DBManager alloc] initWithDatabaseFilename:[self.settings getCurrentDB]];
     
     [self loadData];
 }
@@ -226,10 +223,11 @@
         EditInfoViewController *editInfoViewController = [segue destinationViewController];
         editInfoViewController.delegate = self;
         editInfoViewController.recordIDToEdit = self.recordIDToEdit;
-    } else if ([[segue identifier] isEqual:@"goToSettings"]) {
-        SettingsViewController *settingsViewController = [segue destinationViewController];
-        settingsViewController.currentDB = [self.dbManager databaseFilename];
     }
+//    } else if ([[segue identifier] isEqual:@"goToSettings"]) {
+//        SettingsViewController *settingsViewController = [segue destinationViewController];
+//        settingsViewController.currentDB = [self.dbManager databaseFilename];
+//    }
 }
 
 #pragma mark - Actions

@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray *)loadDataFromDB:(NSString *)query forDatabase:(NSString *)database;
 - (void)executeQuery:(NSString *)query forDatabase:(NSString *)database;
+
 - (void)createNewDatabase:(NSString *)database;
 
 @end

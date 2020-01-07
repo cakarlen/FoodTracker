@@ -14,7 +14,6 @@
 @property (nonatomic, strong) NSString *currentDB;
 
 - (void)runQuery:(const char *)query isQueryExecutable:(BOOL)queryExecutable forDatabase:(NSString *)database;
--(void)copyDatabaseIntoDocumentsDirectory;
 
 @end
 
@@ -29,9 +28,8 @@
         
         // Keep the database filename.
         self.databaseFilename = dbFilename;
-        self.currentDB = @"current_db.db";
         
-        [self copyDatabaseIntoDocumentsDirectory];
+        [self createNewDatabase:dbFilename];
     }
     return self;
 }
@@ -68,61 +66,6 @@
     }
 }
 
-- (void)copyDatabaseIntoDocumentsDirectory {
-    sqlite3 *sqlite3Database;
-    sqlite3 *currentDatabase;
-    // Check if the database file exists in the documents directory.
-    NSString *destinationPath = [self.documentsDirectory stringByAppendingPathComponent:self.databaseFilename];
-    NSString *destinationPathCurrent = [self.documentsDirectory stringByAppendingPathComponent:self.currentDB];
-    
-    if (!([[NSFileManager defaultManager] fileExistsAtPath:destinationPath] && [[NSFileManager defaultManager] fileExistsAtPath:destinationPathCurrent])) {
-#if DEBUG
-        DLog(@"Database does not exist");
-#endif
-        const char *dbpath = [destinationPath UTF8String];
-        const char *currentDBPath = [destinationPathCurrent UTF8String];
-        
-        // Entry database
-        if (sqlite3_open(dbpath, &sqlite3Database) == SQLITE_OK)
-        {
-            char *errMsg;
-            const char *sql_stmt =
-            "CREATE TABLE IF NOT EXISTS FOOD (ID INTEGER PRIMARY KEY AUTOINCREMENT, PLACE TEXT, PRICE FLOAT, DATE TEXT)";
-
-            if (sqlite3_exec(sqlite3Database, sql_stmt, NULL, NULL, &errMsg) != SQLITE_OK) {
-                DLog(@"Failed to create the table\n");
-            }
-            
-            sqlite3_close(sqlite3Database);
-#if DEBUG
-            DLog(@"Created entry database at %@", destinationPath);
-#endif
-        } else {
-            DLog(@"Failed to open/create the entry database file\n");
-        }
-        
-        // Current database
-        if (sqlite3_open(currentDBPath, &currentDatabase) == SQLITE_OK) {
-            char *errMsg;
-            const char *sql_stmt =
-            "CREATE TABLE IF NOT EXISTS CURRENT_DB (ID INTEGER PRIMARY KEY AUTOINCREMENT, DATABASE TEXT)";
-            
-            if (sqlite3_exec(currentDatabase, sql_stmt, NULL, NULL, &errMsg) != SQLITE_OK) {
-                DLog(@"Failed to create the table\n");
-            }
-            
-            [self executeQuery:@"insert into current_db values(null, 'food.db')" forDatabase:@"current"];
-            
-            sqlite3_close(currentDatabase);
-#if DEBUG
-            DLog(@"Created current database at %@", destinationPathCurrent);
-#endif
-        } else {
-            DLog(@"Failed to open/create the current database file\n");
-        }
-    }
-}
-
 - (void)runQuery:(const char *)query isQueryExecutable:(BOOL)queryExecutable forDatabase:(NSString *)database {
     // Create a sqlite object.
     sqlite3 *sqlite3Database;
@@ -141,7 +84,7 @@
         // Initialize the column names array.
         if (self.arrColumnNames != nil) {
             [self.arrColumnNames removeAllObjects];
-            self.arrColumnNames = nil;
+//            self.arrColumnNames = nil;
         }
         self.arrColumnNames = [[NSMutableArray alloc] init];
         
@@ -260,7 +203,7 @@
         // Initialize the column names array.
         if (self.arrColumnNames != nil) {
             [self.arrColumnNames removeAllObjects];
-            self.arrColumnNames = nil;
+//            self.arrColumnNames = nil;
         }
         self.arrColumnNames = [[NSMutableArray alloc] init];
         

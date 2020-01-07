@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EditInfoViewController : UIViewController <UITextFieldDelegate>
+@interface EditInfoViewController : UIViewController <UITextViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITextView *placeField;
 @property (weak, nonatomic) IBOutlet UITextView *priceField;

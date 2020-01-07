@@ -7,15 +7,17 @@
 //
 
 // TODO: Look at adding a UITabBar to settings for add/delete
-// TODO: Streamline DBManager using createNewDatabase
 
 #import "SettingsViewController.h"
 
 @interface SettingsViewController ()
 
 @property (nonatomic, strong) DBManager *dbManager;
+@property (nonatomic, strong) Helper *helper;
 @property (nonatomic, strong) NSMutableArray *documentFiles;
 @property NSMutableArray *correctedDocumentFiles;
+
+- (BOOL)doesfileExist:(NSString *)file;
 
 @end
 
@@ -24,25 +26,25 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.dbManager = [[DBManager alloc] initWithDatabaseFilename:@"food.db"];
-        
-        NSString *findDatabase = @"select * from current_db";
-        NSArray *currentDB = [[NSArray alloc] initWithArray:[self.dbManager loadDataFromDB:findDatabase forDatabase:@"current"]];
-        self.currentDB = [[currentDB objectAtIndex:0] objectForKey:@"DATABASE"];
-        
-        if (![[self.dbManager databaseFilename] isEqualToString:self.currentDB]) {
-            self.dbManager = [[DBManager alloc] initWithDatabaseFilename:self.currentDB];
-            self.currentDB = [self.dbManager databaseFilename];
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentsPath = [paths objectAtIndex:0];
+        NSString *plistPath = [documentsPath stringByAppendingPathComponent:@"current_db.plist"];
+
+        if ([self doesfileExist:plistPath]) {
+            self.dbManager = [[DBManager alloc] initWithDatabaseFilename:[self getCurrentDB]];
+        } else {
+            self.dbManager = [[DBManager alloc] initWithDatabaseFilename:[self writeForCurrentPlist:@"default.db"]];
         }
     }
-    
+
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self.dbManager = [[DBManager alloc] initWithDatabaseFilename:self.currentDB];
+    self.helper = [[Helper alloc] init];
+    self.dbManager = [[DBManager alloc] initWithDatabaseFilename:[self getCurrentDB]];
     
     self.documentFiles = [[NSMutableArray alloc] init];
     self.documentFiles = [[NSFileManager defaultManager] subpathsOfDirectoryAtPath:[self.dbManager documentsDirectory] error:nil];
@@ -55,14 +57,15 @@
     // Remove occurance of current_db from documentFiles array
     self.correctedDocumentFiles = [[NSMutableArray alloc] init];
     for (NSString *file in self.documentFiles) {
-        if (![file isEqualToString:@"current_db.db"]) {
+        if (![file isEqualToString:@"current_db.plist"]) {
+//            NSString *newFile = [file stringByReplacingOccurrencesOfString:@".db" withString:@""];
             [self.correctedDocumentFiles addObject:file];
         }
     }
     
     // Select current database as default in picker
     for (NSString *file in self.correctedDocumentFiles) {
-        if ([file isEqualToString:self.currentDB]) {
+        if ([file isEqualToString:[self getCurrentDB]]) {
             NSInteger indexOfFood = [self.correctedDocumentFiles indexOfObject:file];
             [self.databasePicker selectRow:indexOfFood inComponent:0 animated:NO];
         }
@@ -91,50 +94,45 @@
 }
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
-    if (![self.currentDB isEqualToString:self.correctedDocumentFiles[row]]) {
-        self.currentDB = self.correctedDocumentFiles[row];
+    // If user actually selects a new database on picker
+    if (![[self getCurrentDB] isEqualToString:self.correctedDocumentFiles[row]]) {
+        // Set currentDB to picker selected
+        NSString *newDB = self.correctedDocumentFiles[row];
         
-        NSString *query = [NSString stringWithFormat:@"update current_db set DATABASE='%@' where id=%d", self.currentDB, 1];
-        [self.dbManager executeQuery:query forDatabase:@"current"];
+        // Execute query to save currentDB
+        [self updateCurrentPlist:newDB];
         
-        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Database changed!"
-                                   message:@"The app will close to confirm change"
-                                   preferredStyle:UIAlertControllerStyleAlert];
-
+        // Create actions and present alert
         UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
-                                       handler:^(UIAlertAction * action) {
+                                       handler:^(UIAlertAction *action) {
             exit(0);
         }];
         UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
         
-        [alert addAction:cancel];
-        [alert addAction:ok];
+        NSArray *actions = [[NSArray alloc] initWithObjects:ok, cancel, nil];
+        UIAlertController *alert = [self.helper createAlertWithTitle:@"Database changed!" withMessage:@"The app will close to confirm change" withActions:actions];
+        
         [self presentViewController:alert animated:YES completion:nil];
     }
 }
 
-- (void)removeFile:(NSString *)filename
-{
+- (void)removeFile:(NSString *)filename {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    
     NSString *filePath = [documentsPath stringByAppendingPathComponent:filename];
     
-    if ([filename isEqualToString:self.currentDB]) {
+    if ([filename isEqualToString:[self getCurrentDB]]) {
         UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Error!"
                                    message:@"Cannot remove currently selected database"
                                    preferredStyle:UIAlertControllerStyleAlert];
 
         UIAlertAction* ok = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault
-                                       handler:^(UIAlertAction * action) {
-            [fileManager removeItemAtPath:filePath error:nil];
-            [self.navigationController popViewControllerAnimated:YES];
-        }];
+                                       handler:^(UIAlertAction * action) {}];
         [alert addAction:ok];
         [self presentViewController:alert animated:YES completion:nil];
     } else {
         UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Please confirm!"
-                                   message:[NSString stringWithFormat:@"Will remove %@.db from list", self.removeDatabaseText.text]
+                                   message:[NSString stringWithFormat:@"Will remove '%@.db' from list", self.removeDatabaseText.text]
                                    preferredStyle:UIAlertControllerStyleAlert];
 
         UIAlertAction* ok = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault
@@ -155,7 +153,7 @@
         [self.dbManager createNewDatabase:[NSString stringWithFormat:@"%@.db", self.databaseText.text]];
         
         UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Success!"
-                                   message:[NSString stringWithFormat:@"Added %@.db to the list", self.databaseText.text]
+                                   message:[NSString stringWithFormat:@"Added '%@.db' to the list", self.databaseText.text]
                                    preferredStyle:UIAlertControllerStyleAlert];
 
         UIAlertAction* ok = [UIAlertAction actionWithTitle:@"Great" style:UIAlertActionStyleDefault
@@ -165,11 +163,13 @@
         
         [alert addAction:ok];
         [self presentViewController:alert animated:YES completion:nil];
+        
     } else if ([self.databaseText.text isEqualToString:@""] && [self.correctedDocumentFiles containsObject:[NSString stringWithFormat:@"%@.db", self.removeDatabaseText.text]]) {
         [self removeFile:[NSString stringWithFormat:@"%@.db", self.removeDatabaseText.text]];
+        
     } else if ([self.databaseText.text isEqualToString:@""] && ![self.correctedDocumentFiles containsObject:[NSString stringWithFormat:@"%@.db", self.removeDatabaseText.text]]) {
         UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Error!"
-                                   message:[NSString stringWithFormat:@"%@.db does not exist in the list", self.removeDatabaseText.text]
+                                   message:[NSString stringWithFormat:@"'%@.db' does not exist in the list", self.removeDatabaseText.text]
                                    preferredStyle:UIAlertControllerStyleAlert];
 
         UIAlertAction* ok = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault
@@ -178,6 +178,7 @@
         }];
         [alert addAction:ok];
         [self presentViewController:alert animated:YES completion:nil];
+        
     } else if ([self.databaseText.text isEqualToString:@""] && [self.removeDatabaseText.text isEqualToString:@""]) {
         UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Error!"
                                    message:@"Please enter something in one of the fields"
@@ -187,6 +188,7 @@
                                        handler:^(UIAlertAction * action) {}];
         [alert addAction:ok];
         [self presentViewController:alert animated:YES completion:nil];
+        
     } else {
         UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Error!"
                                                                        message:@"Both fields cannot be filled out"
@@ -200,6 +202,62 @@
         
         [alert addAction:ok];
         [self presentViewController:alert animated:YES completion:nil];
+    }
+}
+
+- (NSString *)writeForCurrentPlist:(NSString *)databaseName {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains (NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsPath = [paths objectAtIndex:0];
+    NSString *plistPath = [documentsPath stringByAppendingPathComponent:@"current_db.plist"];
+    NSArray *current = [[NSArray alloc] initWithObjects:databaseName, nil];
+    
+    NSDictionary *plistDict = [[NSDictionary alloc] initWithObjects:current forKeys:[NSArray arrayWithObjects:@"current", nil]];
+    
+    NSError *error = nil;
+    NSData *plistData = [NSPropertyListSerialization dataWithPropertyList:plistDict format:NSPropertyListXMLFormat_v1_0 options:0 error:&error];
+    
+    if (plistData) {
+        [plistData writeToFile:plistPath atomically:YES];
+        return databaseName;
+    } else {
+        return @"";
+    }
+}
+
+- (NSString *)getCurrentDB {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains (NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsPath = [paths objectAtIndex:0];
+    NSString *plistPath = [documentsPath stringByAppendingPathComponent:@"current_db.plist"];
+    
+    if (![self doesfileExist:plistPath]) {
+        plistPath = [[NSBundle mainBundle] pathForResource:@"current_db" ofType:@"plist"];
+    }
+    
+    NSDictionary *dict = [[NSDictionary alloc] initWithContentsOfFile:plistPath];
+    return [dict objectForKey:@"current"];
+}
+
+- (void)updateCurrentPlist:(NSString *)databaseName {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsPath = [paths objectAtIndex:0];
+    NSString *plistPath = [documentsPath stringByAppendingPathComponent:@"current_db.plist"];
+    
+    if (![self doesfileExist:plistPath]) {
+        plistPath = [[NSBundle mainBundle] pathForResource:@"current_db" ofType:@"plist"];
+    }
+    
+    NSMutableDictionary *oldData = [[NSMutableDictionary alloc] initWithContentsOfFile:plistPath];
+    
+    [oldData removeAllObjects];
+    [oldData setValue:databaseName forKey:@"current"];
+    [oldData writeToFile:plistPath atomically:YES];
+}
+            
+- (BOOL)doesfileExist:(NSString *)file {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:file]) {
+        return YES;
+    } else {
+        return NO;
     }
 }
 

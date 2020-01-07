@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SettingsViewController : UIViewController <UIPickerViewDelegate, UIPickerViewDataSource, UITextViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UIPickerView *databasePicker;
-@property (nonatomic, strong) NSString *currentDB;
+//@property (nonatomic, strong) NSString *currentDB;
 
 @property (weak, nonatomic) IBOutlet UITextView *databaseText;
 @property (weak, nonatomic) IBOutlet UITextView *removeDatabaseText;
@@ -23,6 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 - (instancetype)init;
+
+- (NSString *)writeForCurrentPlist:(NSString *)databaseName;
+- (NSString *)getCurrentDB;
+- (void)updateCurrentPlist:(NSString *)databaseName;
 
 @end
 

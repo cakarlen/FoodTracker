@@ -21,6 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)stringFromNumber:(NSNumber *)num;
 - (NSString *)stringByFormattingString:(NSString *)string toPrecision:(NSInteger)precision;
 
+// Convenience
+- (UIAlertController *)createAlertWithTitle:(NSString *)title withMessage:(NSString *)message withActions:(NSArray <UIAlertAction *> *)actions;
+- (BOOL)doesfileExist:(NSString *)file;
+
 @end
 
 #ifdef DEBUG
