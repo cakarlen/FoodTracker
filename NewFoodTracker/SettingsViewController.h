@@ -8,22 +8,19 @@
 
 #import <UIKit/UIKit.h>
 #import "DBManager.h"
-#import "ViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AddDatabaseViewController, RemoveDatabaseViewController;
+
 @interface SettingsViewController : UIViewController <UIPickerViewDelegate, UIPickerViewDataSource, UITextViewDelegate>
-
-@property (weak, nonatomic) IBOutlet UIPickerView *databasePicker;
-//@property (nonatomic, strong) NSString *currentDB;
-
-@property (weak, nonatomic) IBOutlet UITextView *databaseText;
-@property (weak, nonatomic) IBOutlet UITextView *removeDatabaseText;
-- (IBAction)saveSettings:(id)sender;
-
 
 - (instancetype)init;
 
+@property (weak, nonatomic) IBOutlet UIPickerView *databasePicker;
+@property (nonatomic, strong) NSMutableArray *correctedDocumentFiles;
+
+- (void)loadPickerData;
 - (NSString *)writeForCurrentPlist:(NSString *)databaseName;
 - (NSString *)getCurrentDB;
 - (void)updateCurrentPlist:(NSString *)databaseName;

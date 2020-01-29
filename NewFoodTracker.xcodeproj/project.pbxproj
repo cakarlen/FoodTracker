@@ -11,6 +11,7 @@
 		AB21920023BA9096009FBF19 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB2191FF23BA9096009FBF19 /* SettingsViewController.m */; };
 		AB21920323BE65C6009FBF19 /* AddDatabaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB21920223BE65C6009FBF19 /* AddDatabaseViewController.m */; };
 		AB3319F1237A70E5008276C4 /* ionna.JPG in Resources */ = {isa = PBXBuildFile; fileRef = AB3319F0237A70E5008276C4 /* ionna.JPG */; };
+		AB3B382E23DFE6E200589864 /* RemoveDatabaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB3B382D23DFE6E200589864 /* RemoveDatabaseViewController.m */; };
 		AB52E73C2378FD3C00143A4D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AB52E73B2378FD3C00143A4D /* AppDelegate.m */; };
 		AB52E73F2378FD3C00143A4D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB52E73E2378FD3C00143A4D /* ViewController.m */; };
 		AB52E7422378FD3C00143A4D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AB52E7402378FD3C00143A4D /* Main.storyboard */; };
@@ -33,6 +34,8 @@
 		AB21920223BE65C6009FBF19 /* AddDatabaseViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AddDatabaseViewController.m; sourceTree = "<group>"; };
 		AB3319F0237A70E5008276C4 /* ionna.JPG */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = ionna.JPG; sourceTree = "<group>"; };
 		AB3319F2237B071E008276C4 /* Helper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Helper.h; sourceTree = "<group>"; };
+		AB3B382C23DFE6E200589864 /* RemoveDatabaseViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemoveDatabaseViewController.h; sourceTree = "<group>"; };
+		AB3B382D23DFE6E200589864 /* RemoveDatabaseViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RemoveDatabaseViewController.m; sourceTree = "<group>"; };
 		AB52E7372378FD3C00143A4D /* Food Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Food Tracker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB52E73A2378FD3C00143A4D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		AB52E73B2378FD3C00143A4D /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -109,6 +112,8 @@
 				AB0F83052384ECE7002FB525 /* PurchaseManager.m */,
 				AB21920123BE65C6009FBF19 /* AddDatabaseViewController.h */,
 				AB21920223BE65C6009FBF19 /* AddDatabaseViewController.m */,
+				AB3B382C23DFE6E200589864 /* RemoveDatabaseViewController.h */,
+				AB3B382D23DFE6E200589864 /* RemoveDatabaseViewController.m */,
 			);
 			path = NewFoodTracker;
 			sourceTree = "<group>";
@@ -196,6 +201,7 @@
 				AB52E7582379037B00143A4D /* EditInfoViewController.m in Sources */,
 				AB0F83062384ECE7002FB525 /* PurchaseManager.m in Sources */,
 				AB21920023BA9096009FBF19 /* SettingsViewController.m in Sources */,
+				AB3B382E23DFE6E200589864 /* RemoveDatabaseViewController.m in Sources */,
 				AB52E73F2378FD3C00143A4D /* ViewController.m in Sources */,
 				AB52E74A2378FD3E00143A4D /* main.m in Sources */,
 				AB94FFD2237F040900526728 /* Helper.m in Sources */,

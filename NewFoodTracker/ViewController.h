@@ -10,6 +10,8 @@
 #import "DBManager.h"
 #import "EditInfoViewController.h"
 #import "SettingsViewController.h"
+#import "AddDatabaseViewController.h"
+#import "RemoveDatabaseViewController.h"
 
 @interface ViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>  
 

@@ -5,17 +5,17 @@
 //  Created by Chase Karlen on 12/30/19.
 //  Copyright © 2019 Chase Karlen. All rights reserved.
 //
-
-// TODO: Look at adding a UITabBar to settings for add/delete
+// TODO: Look at hitting delete button on selected row of picker to delete instead of prompting new VC
 
 #import "SettingsViewController.h"
+#import "AddDatabaseViewController.h"
+#import "RemoveDatabaseViewController.h"
 
 @interface SettingsViewController ()
 
 @property (nonatomic, strong) DBManager *dbManager;
 @property (nonatomic, strong) Helper *helper;
 @property (nonatomic, strong) NSMutableArray *documentFiles;
-@property NSMutableArray *correctedDocumentFiles;
 
 - (BOOL)doesfileExist:(NSString *)file;
 
@@ -46,13 +46,17 @@
     self.helper = [[Helper alloc] init];
     self.dbManager = [[DBManager alloc] initWithDatabaseFilename:[self getCurrentDB]];
     
-    self.documentFiles = [[NSMutableArray alloc] init];
-    self.documentFiles = [[NSFileManager defaultManager] subpathsOfDirectoryAtPath:[self.dbManager documentsDirectory] error:nil];
-    
     self.databasePicker.delegate = self;
     self.databasePicker.dataSource = self;
-    self.databaseText.delegate = self;
-    self.removeDatabaseText.delegate = self;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [self loadPickerData];
+}
+
+- (void)loadPickerData {
+    self.documentFiles = [[NSMutableArray alloc] init];
+    self.documentFiles = [[NSFileManager defaultManager] subpathsOfDirectoryAtPath:[self.dbManager documentsDirectory] error:nil];
     
     // Remove occurance of current_db from documentFiles array
     self.correctedDocumentFiles = [[NSMutableArray alloc] init];
@@ -70,6 +74,8 @@
             [self.databasePicker selectRow:indexOfFood inComponent:0 animated:NO];
         }
     }
+    
+    [[self databasePicker] reloadAllComponents];
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
@@ -112,95 +118,6 @@
         NSArray *actions = [[NSArray alloc] initWithObjects:ok, cancel, nil];
         UIAlertController *alert = [self.helper createAlertWithTitle:@"Database changed!" withMessage:@"The app will close to confirm change" withActions:actions];
         
-        [self presentViewController:alert animated:YES completion:nil];
-    }
-}
-
-- (void)removeFile:(NSString *)filename {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    NSString *filePath = [documentsPath stringByAppendingPathComponent:filename];
-    
-    if ([filename isEqualToString:[self getCurrentDB]]) {
-        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Error!"
-                                   message:@"Cannot remove currently selected database"
-                                   preferredStyle:UIAlertControllerStyleAlert];
-
-        UIAlertAction* ok = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault
-                                       handler:^(UIAlertAction * action) {}];
-        [alert addAction:ok];
-        [self presentViewController:alert animated:YES completion:nil];
-    } else {
-        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Please confirm!"
-                                   message:[NSString stringWithFormat:@"Will remove '%@.db' from list", self.removeDatabaseText.text]
-                                   preferredStyle:UIAlertControllerStyleAlert];
-
-        UIAlertAction* ok = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault
-                                       handler:^(UIAlertAction * action) {
-            [fileManager removeItemAtPath:filePath error:nil];
-            [self.navigationController popViewControllerAnimated:YES];
-        }];
-        UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
-        
-        [alert addAction:cancel];
-        [alert addAction:ok];
-        [self presentViewController:alert animated:YES completion:nil];
-    }
-}
-
-- (IBAction)saveSettings:(id)sender {
-    if (![self.databaseText.text isEqualToString:@""] && [self.removeDatabaseText.text isEqualToString:@""]) {
-        [self.dbManager createNewDatabase:[NSString stringWithFormat:@"%@.db", self.databaseText.text]];
-        
-        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Success!"
-                                   message:[NSString stringWithFormat:@"Added '%@.db' to the list", self.databaseText.text]
-                                   preferredStyle:UIAlertControllerStyleAlert];
-
-        UIAlertAction* ok = [UIAlertAction actionWithTitle:@"Great" style:UIAlertActionStyleDefault
-                                       handler:^(UIAlertAction * action) {
-            [self.navigationController popViewControllerAnimated:YES];
-        }];
-        
-        [alert addAction:ok];
-        [self presentViewController:alert animated:YES completion:nil];
-        
-    } else if ([self.databaseText.text isEqualToString:@""] && [self.correctedDocumentFiles containsObject:[NSString stringWithFormat:@"%@.db", self.removeDatabaseText.text]]) {
-        [self removeFile:[NSString stringWithFormat:@"%@.db", self.removeDatabaseText.text]];
-        
-    } else if ([self.databaseText.text isEqualToString:@""] && ![self.correctedDocumentFiles containsObject:[NSString stringWithFormat:@"%@.db", self.removeDatabaseText.text]]) {
-        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Error!"
-                                   message:[NSString stringWithFormat:@"'%@.db' does not exist in the list", self.removeDatabaseText.text]
-                                   preferredStyle:UIAlertControllerStyleAlert];
-
-        UIAlertAction* ok = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault
-                                       handler:^(UIAlertAction * action) {
-            self.removeDatabaseText.text = @"";
-        }];
-        [alert addAction:ok];
-        [self presentViewController:alert animated:YES completion:nil];
-        
-    } else if ([self.databaseText.text isEqualToString:@""] && [self.removeDatabaseText.text isEqualToString:@""]) {
-        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Error!"
-                                   message:@"Please enter something in one of the fields"
-                                   preferredStyle:UIAlertControllerStyleAlert];
-
-        UIAlertAction* ok = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault
-                                       handler:^(UIAlertAction * action) {}];
-        [alert addAction:ok];
-        [self presentViewController:alert animated:YES completion:nil];
-        
-    } else {
-        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Error!"
-                                                                       message:@"Both fields cannot be filled out"
-                                                                preferredStyle:UIAlertControllerStyleAlert];
-        
-        UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
-                                                   handler:^(UIAlertAction * action) {
-            self.databaseText.text = @"";
-            self.removeDatabaseText.text = @"";
-        }];
-        
-        [alert addAction:ok];
         [self presentViewController:alert animated:YES completion:nil];
     }
 }
@@ -258,6 +175,17 @@
         return YES;
     } else {
         return NO;
+    }
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Because I didn't know another way to do this
+    if ([[segue identifier] isEqual:@"addDatabaseSegue"]) {
+        AddDatabaseViewController *add = [segue destinationViewController];
+        [add setSettings:self];
+    } else if ([[segue identifier] isEqual:@"removeDatabaseSegue"]) {
+        RemoveDatabaseViewController *remove = [segue destinationViewController];
+        [remove setSettings:self];
     }
 }
 

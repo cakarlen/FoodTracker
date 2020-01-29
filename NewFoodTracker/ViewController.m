@@ -244,8 +244,4 @@
     [self performSegueWithIdentifier:@"idSegueEditInfo" sender:self];
 }
 
-- (IBAction)clickedSettings:(id)sender {
-    [self performSegueWithIdentifier:@"goToSettings" sender:self];
-}
-
 @end
