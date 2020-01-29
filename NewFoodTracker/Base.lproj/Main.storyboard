@@ -121,7 +121,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <pickerView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ctn-Sb-2ez">
-                                <rect key="frame" x="102" y="134" width="171" height="108"/>
+                                <rect key="frame" x="16" y="150" width="337" height="108"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             </pickerView>
                         </subviews>
@@ -178,17 +178,20 @@
                                 <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="done"/>
                             </textView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="McR-fc-5nK">
+                                <rect key="frame" x="16" y="206" width="343" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                <state key="normal" title="Add"/>
+                                <connections>
+                                    <action selector="saveAddDatabase:" destination="W4H-SL-dp6" eventType="touchUpInside" id="Rrz-5N-Ssn"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <viewLayoutGuide key="safeArea" id="jD2-aa-SNL"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Add database" id="WcW-Ss-67U">
-                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="save" id="6TS-0w-C0h">
-                            <connections>
-                                <action selector="saveAddDatabase:" destination="W4H-SL-dp6" id="BsQ-IC-mFU"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" title="Add database" id="WcW-Ss-67U"/>
                     <connections>
                         <outlet property="addDatabaseField" destination="Z1V-u6-fPB" id="jpp-If-Y7E"/>
                     </connections>
@@ -219,17 +222,20 @@
                                 <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="done"/>
                             </textView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gAw-Tx-IWa">
+                                <rect key="frame" x="16" y="214" width="343" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                <state key="normal" title="Remove"/>
+                                <connections>
+                                    <action selector="saveRemoveDatabase:" destination="ba7-nW-2AF" eventType="touchUpInside" id="8me-yP-BLk"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <viewLayoutGuide key="safeArea" id="yF0-fA-M0H"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Remove database" id="6o9-vV-TKZ">
-                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="save" id="RV1-9l-Jds">
-                            <connections>
-                                <action selector="saveRemoveDatabase:" destination="ba7-nW-2AF" id="D73-xS-AMx"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" title="Remove database" id="6o9-vV-TKZ"/>
                     <connections>
                         <outlet property="removeDatabaseField" destination="ZyD-r5-yco" id="6R4-b8-fpr"/>
                     </connections>

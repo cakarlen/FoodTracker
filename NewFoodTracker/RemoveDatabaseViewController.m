@@ -67,19 +67,31 @@
 }
 
 - (IBAction)saveRemoveDatabase:(id)sender {
-    if ([self.settings.correctedDocumentFiles containsObject:[NSString stringWithFormat:@"%@.db", self.removeDatabaseField.text]]) {
-        [self removeFile:[NSString stringWithFormat:@"%@.db", self.removeDatabaseField.text]];
-    } else {
+    if ([self.removeDatabaseField.text isEqualToString:@""]) {
         UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Error!"
-                                   message:[NSString stringWithFormat:@"'%@.db' does not exist in the list", self.removeDatabaseField.text]
+                                   message:@"Field cannot be blank"
                                    preferredStyle:UIAlertControllerStyleAlert];
 
         UIAlertAction* ok = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault
-                                       handler:^(UIAlertAction * action) {
-            self.removeDatabaseField.text = @"";
-        }];
+                                       handler:^(UIAlertAction * action) {}];
+        
         [alert addAction:ok];
         [self presentViewController:alert animated:YES completion:nil];
+    } else {
+        if ([self.settings.correctedDocumentFiles containsObject:[NSString stringWithFormat:@"%@.db", self.removeDatabaseField.text]]) {
+            [self removeFile:[NSString stringWithFormat:@"%@.db", self.removeDatabaseField.text]];
+        } else {
+            UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Error!"
+                                       message:[NSString stringWithFormat:@"'%@.db' does not exist in the list", self.removeDatabaseField.text]
+                                       preferredStyle:UIAlertControllerStyleAlert];
+
+            UIAlertAction* ok = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault
+                                           handler:^(UIAlertAction * action) {
+                self.removeDatabaseField.text = @"";
+            }];
+            [alert addAction:ok];
+            [self presentViewController:alert animated:YES completion:nil];
+        }
     }
 }
 
