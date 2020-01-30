@@ -38,7 +38,7 @@
             return [p2.date compare:p1.date];
         }];
         
-        self.purchasesArr = sortedArray;
+        self.purchasesArr = [sortedArray mutableCopy];
     }
     
     return self;

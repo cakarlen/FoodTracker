@@ -11,6 +11,7 @@
 @interface AddDatabaseViewController () <UITextViewDelegate>
 
 @property (nonatomic, strong) DBManager *dbManager;
+@property (nonatomic, strong) SettingsViewController *settings;
 
 @end
 
@@ -21,6 +22,7 @@
     self.addDatabaseField.delegate = self;
     
     self.dbManager = [[DBManager alloc] initWithDatabaseFilename:[self.settings getCurrentDB]];
+    self.settings = [SettingsViewController sharedManager];
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
@@ -46,13 +48,14 @@
     } else {
         if (![self.settings.correctedDocumentFiles containsObject:[NSString stringWithFormat:@"%@.db", self.addDatabaseField.text]]) {
             UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Please confirm!"
-                                       message:[NSString stringWithFormat:@"Will add %@.db to the list", self.addDatabaseField.text]
+                                       message:[NSString stringWithFormat:@"Will add '%@.db' to the list", self.addDatabaseField.text]
                                        preferredStyle:UIAlertControllerStyleAlert];
 
             UIAlertAction* ok = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault
                                            handler:^(UIAlertAction * action) {
                 [self.dbManager createNewDatabase:[NSString stringWithFormat:@"%@.db", self.addDatabaseField.text]];
-                [self.navigationController popViewControllerAnimated:YES];
+                [SettingsViewController resetSharedManager];
+                [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
             }];
             UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
             

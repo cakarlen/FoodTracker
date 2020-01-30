@@ -15,7 +15,7 @@
 
 @property (nonatomic, strong) DBManager *dbManager;
 @property (nonatomic, strong) Helper *helper;
-@property (nonatomic, strong) NSMutableArray *documentFiles;
+@property (nonatomic, strong) NSMutableArray<NSString *> *documentFiles;
 
 - (BOOL)doesfileExist:(NSString *)file;
 
@@ -23,7 +23,7 @@
 
 @implementation SettingsViewController
 
-- (instancetype)init {
+- (id)init {
     self = [super init];
     if (self) {
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -35,15 +35,31 @@
         } else {
             self.dbManager = [[DBManager alloc] initWithDatabaseFilename:[self writeForCurrentPlist:@"default.db"]];
         }
+        
+        [self loadPickerData];
     }
 
     return self;
 }
 
+static SettingsViewController *settings = nil;
++ (id)sharedManager {
+    if (settings == nil) {
+        settings = [[self alloc] init];
+    }
+    return settings;
+}
+
++ (void)resetSharedManager {
+    @synchronized (self) {
+        settings = nil;
+    }
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self.helper = [[Helper alloc] init];
+    self.helper = [Helper sharedManager];
     self.dbManager = [[DBManager alloc] initWithDatabaseFilename:[self getCurrentDB]];
     
     self.databasePicker.delegate = self;
@@ -55,8 +71,8 @@
 }
 
 - (void)loadPickerData {
-    self.documentFiles = [[NSMutableArray alloc] init];
-    self.documentFiles = [[NSFileManager defaultManager] subpathsOfDirectoryAtPath:[self.dbManager documentsDirectory] error:nil];
+    self.documentFiles = [[NSMutableArray<NSString *> alloc] init];
+    self.documentFiles = [[[NSFileManager defaultManager] subpathsOfDirectoryAtPath:[self.dbManager documentsDirectory] error:nil] mutableCopy];
     
     // Remove occurance of current_db from documentFiles array
     self.correctedDocumentFiles = [[NSMutableArray alloc] init];
@@ -178,15 +194,31 @@
     }
 }
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Because I didn't know another way to do this
-    if ([[segue identifier] isEqual:@"addDatabaseSegue"]) {
-        AddDatabaseViewController *add = [segue destinationViewController];
-        [add setSettings:self];
-    } else if ([[segue identifier] isEqual:@"removeDatabaseSegue"]) {
-        RemoveDatabaseViewController *remove = [segue destinationViewController];
-        [remove setSettings:self];
+- (IBAction)didHitGetTotal:(id)sender {
+    NSNumber *total;
+    
+    for (EntryManager *entry in self.food) {
+        total = [NSNumber numberWithFloat:[total floatValue] + [entry.total floatValue]];
     }
+    
+    UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                   handler:^(UIAlertAction *action) {}];
+    
+    NSArray *actions = [[NSArray alloc] initWithObjects:ok, nil];
+    UIAlertController *alert = [self.helper createAlertWithTitle:@"Current amount spent" withMessage:[NSString stringWithFormat:@"$%@", total] withActions:actions];
+    
+    [self presentViewController:alert animated:YES completion:nil];
 }
+
+//- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+//    // Because I didn't know another way to do this
+//    if ([[segue identifier] isEqual:@"addDatabaseSegue"]) {
+//        AddDatabaseViewController *add = [segue destinationViewController];
+//        [add setSettings:self];
+//    } else if ([[segue identifier] isEqual:@"removeDatabaseSegue"]) {
+//        RemoveDatabaseViewController *remove = [segue destinationViewController];
+//        [remove setSettings:self];
+//    }
+//}
 
 @end

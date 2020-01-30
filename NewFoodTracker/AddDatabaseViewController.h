@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface AddDatabaseViewController : UIViewController <UITextViewDelegate>
 
-@property (nonatomic, strong) SettingsViewController *settings;
+//@property (nonatomic, strong) SettingsViewController *settings;
 
 @property (weak, nonatomic) IBOutlet UITextView *addDatabaseField;
 - (IBAction)saveAddDatabase:(id)sender;

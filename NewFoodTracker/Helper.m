@@ -14,6 +14,15 @@
 
 @implementation Helper
 
++ (id)sharedManager {
+    static Helper *helper = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        helper = [[self alloc] init];
+    });
+    return helper;
+}
+
 - (NSString *)convertDateToString:(UIDatePicker *)dateField {
     NSDate *date = dateField.date;
     NSDateFormatter *_dateFormat = [[NSDateFormatter alloc]

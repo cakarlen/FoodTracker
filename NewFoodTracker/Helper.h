@@ -14,6 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface Helper : NSObject
 
+// Init
++ (id)sharedManager;
+
 // Conversions
 - (NSString *)convertDateToString:(UIDatePicker *)dateField;
 - (NSDate *)convertStringToDate:(NSString *)stringToConvert;

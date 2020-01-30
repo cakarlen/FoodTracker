@@ -12,6 +12,7 @@
 
 @property (nonatomic, strong) DBManager *dbManager;
 @property (nonatomic, strong) SettingsViewController *settings;
+@property (nonatomic, strong) Helper *helper;
 @property (nonatomic, strong) NSArray *arrFoodInfo;
 @property (nonatomic, strong) NSMutableArray *resultsTitles;
 @property (nonatomic, strong) NSMutableArray *results;
@@ -28,7 +29,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.settings = [[SettingsViewController alloc] init];
+    self.settings = [SettingsViewController sharedManager];
+    self.helper = [Helper sharedManager];
     
     self.foodTable.delegate = self;
     self.foodTable.dataSource = self;
@@ -36,6 +38,15 @@
     self.dbManager = [[DBManager alloc] initWithDatabaseFilename:[self.settings getCurrentDB]];
     
     [self loadData];
+    [self.settings setFood:_results];
+}
+
+// Deselect selected cell if selected
+- (void)viewWillAppear:(BOOL)animated {
+    NSIndexPath *indexPath = self.foodTable.indexPathForSelectedRow;
+    if (indexPath) {
+        [self.foodTable deselectRowAtIndexPath:indexPath animated:YES];
+    }
 }
 
 - (void)loadData {
@@ -101,7 +112,7 @@
     NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:@"self" ascending:NO];
     NSArray *descriptors = [NSArray arrayWithObject:descriptor];
     NSArray *reverseTitles = [_resultsTitles sortedArrayUsingDescriptors:descriptors];
-    _resultsTitles = reverseTitles;
+    _resultsTitles = [reverseTitles mutableCopy];
     
 #if DEBUG
     DLog(@"arrFoodInfo is: %@", [self arrFoodInfo]);
@@ -109,6 +120,8 @@
     
     // Reload the table view.
     [self.foodTable reloadData];
+    
+    [self.settings setFood:_results];
 }
 
 #pragma mark - Table setup
@@ -172,12 +185,13 @@
     // Set the loaded data to the appropriate cell labels.
     cell.textLabel.text = [NSString stringWithFormat:@"%@ | $%@", [actualData valueForKey:@"PLACE"], [actualData valueForKey:@"PRICE"]];
     cell.detailTextLabel.text = [NSString stringWithFormat:@"Date: %@", [actualData valueForKey:@"DATE"]];
+    cell.selectionStyle = UITableViewCellSelectionStyleGray;
     
     return cell;
 }
 
 // When user slides to delete an entry
--(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
  
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         NSNumber *weekNum = [_resultsTitles objectAtIndex:indexPath.section];
@@ -202,7 +216,7 @@
 }
 
 // When user edits an entry
--(void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     // Get the record ID of the selected name and set it to the recordIDToEdit property.
     NSNumber *weekNum = [_resultsTitles objectAtIndex:indexPath.section];
     NSInteger index = [self getIndexAtWeek:weekNum];
@@ -224,15 +238,11 @@
         editInfoViewController.delegate = self;
         editInfoViewController.recordIDToEdit = self.recordIDToEdit;
     }
-//    } else if ([[segue identifier] isEqual:@"goToSettings"]) {
-//        SettingsViewController *settingsViewController = [segue destinationViewController];
-//        settingsViewController.currentDB = [self.dbManager databaseFilename];
-//    }
 }
 
 #pragma mark - Actions
 
--(void)editingInfoWasFinished {
+- (void)editingInfoWasFinished {
     // Reload the data.
     [self loadData];
 }
@@ -242,6 +252,22 @@
     
     // Perform the segue.
     [self performSegueWithIdentifier:@"idSegueEditInfo" sender:self];
+}
+
+- (IBAction)didHitGetTotal:(id)sender {
+    NSNumber *total;
+    
+    for (EntryManager *entry in self.results) {
+        total = [NSNumber numberWithFloat:[total floatValue] + [entry.total floatValue]];
+    }
+    
+    UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                   handler:^(UIAlertAction *action) {}];
+    
+    NSArray *actions = [[NSArray alloc] initWithObjects:ok, nil];
+    UIAlertController *alert = [self.helper createAlertWithTitle:@"Current amount spent" withMessage:[NSString stringWithFormat:@"$%@", total] withActions:actions];
+    
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 @end

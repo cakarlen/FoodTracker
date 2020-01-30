@@ -11,6 +11,7 @@
 @interface RemoveDatabaseViewController () <UITextViewDelegate>
 
 @property (nonatomic, strong) Helper *helper;
+@property (nonatomic, strong) SettingsViewController *settings;
 
 @end
 
@@ -20,7 +21,8 @@
     [super viewDidLoad];
     
     self.removeDatabaseField.delegate = self;
-    self.helper = [[Helper alloc] init];
+    self.helper = [Helper sharedManager];
+    self.settings = [SettingsViewController sharedManager];
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
@@ -56,7 +58,8 @@
         UIAlertAction* ok = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault
                                        handler:^(UIAlertAction * action) {
             [fileManager removeItemAtPath:filePath error:nil];
-            [self.navigationController popViewControllerAnimated:YES];
+            [SettingsViewController resetSharedManager];
+            [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         }];
         UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
         

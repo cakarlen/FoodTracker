@@ -26,9 +26,9 @@
     // Do any additional setup after loading the view.
     self.navigationController.navigationBar.tintColor = self.navigationItem.rightBarButtonItem.tintColor;
     
-    self.settings = [[SettingsViewController alloc] init];
+    self.settings = [SettingsViewController sharedManager];
     self.dbManager = [[DBManager alloc] initWithDatabaseFilename:[self.settings getCurrentDB]];
-    self.help = [[Helper alloc] init];
+    self.help = [Helper sharedManager];
     
     _priceField.delegate = self;
     _placeField.delegate = self;

@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "DBManager.h"
+#import "EntryManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,10 +16,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SettingsViewController : UIViewController <UIPickerViewDelegate, UIPickerViewDataSource, UITextViewDelegate>
 
-- (instancetype)init;
+- (id)init;
++ (id)sharedManager;
++ (void)resetSharedManager;
 
 @property (weak, nonatomic) IBOutlet UIPickerView *databasePicker;
 @property (nonatomic, strong) NSMutableArray *correctedDocumentFiles;
+@property (nonatomic, strong) NSMutableArray *food;
 
 - (void)loadPickerData;
 - (NSString *)writeForCurrentPlist:(NSString *)databaseName;
